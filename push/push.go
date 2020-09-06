@@ -43,6 +43,8 @@ type Input struct {
 	BranchName string
 	// Labels
 	Labels []string
+	// BaseBranch is the base branch for the PR.
+	BaseBranch
 }
 
 // Output from Push()
@@ -105,7 +107,12 @@ func GithubPush(ctx context.Context, input Input, repoLimiter *time.Ticker, push
 
 	// Open a pull request, if one doesn't exist already
 	head := fmt.Sprintf("%s:%s", input.RepoOwner, input.BranchName)
-	base := "master"
+
+	if input.BaseBranch != nil {
+		base := input.BaseBranch
+	} else {
+		base := "master"
+	}
 
 	// Determine PR title and body
 	// Title is first line of commit message.

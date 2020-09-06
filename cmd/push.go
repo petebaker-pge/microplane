@@ -27,6 +27,7 @@ var pushThrottle *time.Ticker
 var prAssignee string
 var prBody string
 var prLabels []string
+var prBaseBranch string
 
 var pushCmd = &cobra.Command{
 	Use:   "push",
@@ -73,6 +74,11 @@ var pushCmd = &cobra.Command{
 		}
 		if len(labels) > 0 {
 			prLabels = labels
+		}
+
+		prBaseBranch, err := cmd.Flags().GetStringSlice("base")
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		repos, err := whichRepos(cmd)
@@ -131,6 +137,7 @@ func pushOneRepo(r initialize.Repo, ctx context.Context) error {
 		BranchName:    planOutput.BranchName,
 		RepoOwner:     r.Owner,
 		Labels:        prLabels,
+		BaseBranch:    prBaseBranch,
 	}
 	var output push.Output
 	var err error
